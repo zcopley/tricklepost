@@ -1,6 +1,6 @@
 <?php
 /**
- * Tricklepost - Resyndicate RSS/Atom feeds to a microblog accts, slowly
+ * Tricklepost 0.1 - Resyndicate RSS/Atom feeds to a microblog accts, slowly
  *
  * Copyright (C) 2009 Zach Copley
  *
