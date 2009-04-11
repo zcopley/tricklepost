@@ -1,0 +1,38 @@
+Tricklepost -  Post an RSS/Atom feed your microblog
+
+Copyright (c) 2009  Zach Copley
+License: GNU Affero General Public License v3 (See the LICENSE file).
+
+Tricklepost tries to mitigate the impedance mismatch between RSS/Atom
+feeds and microblogs.  Some feeds have a really high volume of new
+items and/or many items appear in the feed at one time.  If many new
+items in a feed get posted at one time your microblog you may end up
+with a "post flood," which can be super annoying to your microblog
+subscribership.  Tricklepost lets you enter a delay to wait in between
+posts to ensure only one new item gets posted to your microblog every
+so often, which is much cooler.  It handles multiple feeds and microblog
+accounts.
+
+Requirements
+
+- PHP5.2.x
+- MySQL 5.x
+- PHP cURL extension
+- SimplePie (should be included with this source)
+- Cron, or some other scheduler if you want to run Tricklepost
+  automatically
+
+Installation
+
+- Use mysqladmin to create a new db for holding feeds
+- copy tricklepost.ini.sample to tricklepost.ini and customize your you
+  MySQL DB connection info
+- load the tricklepost.sql file (creates a table to hold items)
+- copy feeds.ini.sample to feeds.ini and customize (should be self
+  explanatory)
+- You might also want to make a writable .cache directory
+- Setup a cron job to run feedpoller.php and tricklepost.php
+  (see crontab.sample)
+- You might also want to make a writable .cache dir in your
+  Tricklepost dir for SimplePie to use.
+

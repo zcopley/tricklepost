@@ -1,0 +1,5 @@
+# Check feeds every 10 mins
+*/10   *       *       *       *       /user/bin/php /Users/zcopley/scripts/tricklepost/feedpoller.php>& /dev/null
+
+# Try to send feed items once per minute
+*       *       *       *       *       /usr/bin/php /Users/zcopley/scripts/tricklepost/tricklepost.php>& /dev/null

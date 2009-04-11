@@ -1,0 +1,25 @@
+[feed1]
+; URI of the feed you want to resyndicate to a mublog acct
+uri           = http://www.w3.org/2000/08/w3c-synd/home.rss
+; Twitter-style API post URL
+endpoint      = http://identi.ca/api/statuses/update.xml
+; microblog acct creds
+username      = w3cstuff
+password      = zombo28%
+; How long to wait in between posts (in minutes)
+delay   			= 60
+
+[feed2]
+uri 					= http://wendolonia.com/blog/feed/
+endpoint      = http://bleeper.de/api/statuses/update.xml
+username      = testacct
+password      = gar!gar
+delay   			= 45
+
+[feed3]
+uri 					= http://www.prisonplanet.com/feed.rss
+endpoint      = http://identi.ca/api/statuses/update.xml
+username      = jones
+password      = sn0rkey1
+delay   			= 10
+

@@ -1,0 +1,6 @@
+[Database]
+mysql_host   = YOUR_DB_HOSTNAME
+mysql_db     = YOUR_DB_NAME
+mysql_user   = YOUR_DB_USER
+mysql_passwd = YOUR_DB_PASSWORD
+
