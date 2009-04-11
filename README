@@ -1,4 +1,4 @@
-Tricklepost -  Post an RSS/Atom feed your microblog
+Tricklepost - Post an RSS/Atom feed your microblog
 
 Copyright (c) 2009  Zach Copley
 License: GNU Affero General Public License v3 (See the LICENSE file).
@@ -30,7 +30,6 @@ Installation
 - load the tricklepost.sql file (creates a table to hold items)
 - copy feeds.ini.sample to feeds.ini and customize (should be self
   explanatory)
-- You might also want to make a writable .cache directory
 - Setup a cron job to run feedpoller.php and tricklepost.php
   (see crontab.sample)
 
