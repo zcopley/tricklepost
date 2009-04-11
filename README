@@ -33,6 +33,5 @@ Installation
 - You might also want to make a writable .cache directory
 - Setup a cron job to run feedpoller.php and tricklepost.php
   (see crontab.sample)
-- You might also want to make a writable .cache dir in your
-  Tricklepost dir for SimplePie to use.
+
 

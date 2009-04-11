@@ -29,7 +29,12 @@ mysql_select_db('tricklepost') or die('Could not select database');
 
 foreach ($feeds as $feed) {
 
-    $feed_data = new SimplePie($feed['uri']);
+    $feed_data = new SimplePie();
+    $feed_data->set_feed_url($feed['uri']);
+    $feed_data->enable_cache(false);
+    $feed_data->init();
+    $feed_data->handle_content_type();
+
     print "Reading feed: $feed[uri] ...\n";
 
     foreach ($feed_data->get_items() as $item) {
