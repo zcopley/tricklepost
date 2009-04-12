@@ -84,6 +84,10 @@ foreach ($feeds as $feed) {
             $qry .= 'WHERE hash = \'' . $row['hash'] . '\'';
 
             mysql_query($qry) or die('Query failed: ' . mysql_error());
+            
+            print "Posted: $status\n\n";
+        } else {
+            print "Failed posting: $status\n\n";
         }
 
     } else {
@@ -140,7 +144,7 @@ function post($status, $username, $password, $endpoint) {
 	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 	curl_setopt($ch, CURLOPT_FAILONERROR, 1);
-	curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+	curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 	curl_setopt($ch, CURLOPT_URL, $endpoint);
 	curl_setopt($ch, CURLOPT_POST, 1);
 	curl_setopt($ch, CURLOPT_POSTFIELDS,
@@ -150,14 +154,12 @@ function post($status, $username, $password, $endpoint) {
 	$buffer = curl_exec($ch);
 
 	if (!$buffer) {
-		printf("Couldn't post - cURL error: %s\n", curl_error($ch));
+		printf("cURL error: %s\n", curl_error($ch));
 		curl_close($ch);
-		return NULL;
+		return false;
 	}
 
 	curl_close($ch);
-
-	print "Posted: $status\n\n";
 
 	return true;
 }
