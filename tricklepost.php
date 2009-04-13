@@ -61,8 +61,6 @@ foreach ($feeds as $feed) {
         $qry .= 'ORDER BY created, modified ASC ';
         $qry .= 'LIMIT 0, 1';
 
-        //print $qry;
-
         $result = mysql_query($qry) or die('Query failed: ' . mysql_error());
         $row = mysql_fetch_array($result);
 
@@ -75,19 +73,23 @@ foreach ($feeds as $feed) {
         $short_link = ur1Shorten($row['link']);
         $status = "$title $short_link";
 
+        // XXX: Need to come up with a better solution to avoiding duplicate posts
+        // Maybe look through the notice stream to see if a post is there
+        // already? -- Zach
+
+        // Just assume that the post will go through
+        $qry = 'UPDATE item SET published = ';
+        $qry .= '\'' . date('Y-m-d H:i:s', $now) . '\', ';
+        $qry .= 'short_link = \'' . $short_link . '\', ';
+        $qry .= 'modified = \'' . date('Y-m-d H:i:s', $now) . '\' ';
+        $qry .= 'WHERE hash = \'' . $row['hash'] . '\'';
+
+        mysql_query($qry) or die('Query failed: ' . mysql_error());
+
         if (post($status, $row['username'], $row['password'], $row['endpoint'])) {
-
-            $qry = 'UPDATE item SET published = ';
-            $qry .= '\'' . date('Y-m-d H:i:s', $now) . '\', ';
-            $qry .= 'short_link = \'' . $short_link . '\', ';
-            $qry .= 'modified = \'' . date('Y-m-d H:i:s', $now) . '\' ';
-            $qry .= 'WHERE hash = \'' . $row['hash'] . '\'';
-
-            mysql_query($qry) or die('Query failed: ' . mysql_error());
-            
             print "Posted: $status\n\n";
         } else {
-            print "Failed posting: $status\n\n";
+            print "WARNING! Failed posting: $status\n\n";
         }
 
     } else {
