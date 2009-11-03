@@ -22,7 +22,7 @@ $config = parse_ini_file('tricklepost.ini');
 $feeds = parse_ini_file('feeds.ini', true);
 
 $connection = mysql_connect($config['mysql_host'], $config['mysql_user'],
-    $config['mysql_passwd']) or die('Could not connect: ' . mysql_error());
+                            $config['mysql_passwd']) or die('Could not connect: ' . mysql_error());
 mysql_select_db($config['mysql_db']) or die('Could not select database');
 
 foreach ($feeds as $feed) {
@@ -71,6 +71,13 @@ foreach ($feeds as $feed) {
 
         $title = truncate(urldecode($row['title']));
         $short_link = ur1Shorten($row['link']);
+
+        // If we can't get ur1.ca to work, try again later
+        if (empty($short_link)) {
+            print "\nUnable to get short url for '$title' from ur1.ca. Skipping for now.\n\n";
+            continue;
+        }
+
         $status = "$title $short_link";
 
         // XXX: Need to come up with a better solution to avoiding duplicate posts
@@ -102,68 +109,68 @@ mysql_close($connection);
 
 function truncate($str) {
 
-	if (strlen($str) > 100) {
-		// truncate at 100 chars -- Hey, we have to leave some room for the link
-		$str = substr($str, 0, 100) . '...';
-	}
+    if (strlen($str) > 100) {
+        // truncate at 100 chars -- Hey, we have to leave some room for the link
+        $str = substr($str, 0, 100) . '...';
+    }
 
-	return trim(htmlspecialchars_decode($str));
+    return trim(htmlspecialchars_decode($str));
 }
 
 function ur1Shorten($url)
 {
 
-	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_USERAGENT, "ur1shorten");
-	curl_setopt($ch, CURLOPT_URL,"http://ur1.ca");
-	curl_setopt($ch, CURLOPT_POST, 1);
-	curl_setopt($ch, CURLOPT_POSTFIELDS, "longurl=$url");
-	curl_setopt($ch, CURLOPT_FAILONERROR, 1);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-	$html = curl_exec($ch);
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_USERAGENT, "ur1shorten");
+    curl_setopt($ch, CURLOPT_URL,"http://ur1.ca");
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, "longurl=$url");
+    curl_setopt($ch, CURLOPT_FAILONERROR, 1);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    $html = curl_exec($ch);
 
-	if (!$html) {
-		printf("url1shorten - cURL error: %s\n", curl_error($ch));
-		curl_close($ch);
-		return NULL;
-	}
+    if (!$html) {
+        printf("url1shorten - cURL error: %s\n", curl_error($ch));
+        curl_close($ch);
+        return NULL;
+    }
 
-	curl_close($ch);
+    curl_close($ch);
 
-	$dom = new DOMDocument();
-	@$dom->loadHTML($html);
-	$xpath = new DOMXPath($dom);
-	$hrefs = $xpath->evaluate("/html/body/p[@class='success']/a");
+    $dom = new DOMDocument();
+    @$dom->loadHTML($html);
+    $xpath = new DOMXPath($dom);
+    $hrefs = $xpath->evaluate("/html/body/p[@class='success']/a");
 
-	return $hrefs->item(0)->getAttribute('href');
+    return $hrefs->item(0)->getAttribute('href');
 }
 
 function post($status, $username, $password, $endpoint) {
 
-	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_USERAGENT, "triklepost");
-	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	curl_setopt($ch, CURLOPT_FAILONERROR, 1);
-	curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-	curl_setopt($ch, CURLOPT_URL, $endpoint);
-	curl_setopt($ch, CURLOPT_POST, 1);
-	curl_setopt($ch, CURLOPT_POSTFIELDS,
-	    array('status' => $status, 'source' => 'tricklepost'));
-	curl_setopt($ch, CURLOPT_USERPWD, "$username:$password");
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_USERAGENT, "triklepost");
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_FAILONERROR, 1);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+    curl_setopt($ch, CURLOPT_URL, $endpoint);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS,
+                array('status' => $status, 'source' => 'tricklepost'));
+    curl_setopt($ch, CURLOPT_USERPWD, "$username:$password");
 
-	$buffer = curl_exec($ch);
+    $buffer = curl_exec($ch);
 
-	if (!$buffer) {
-		printf("cURL error: %s\n", curl_error($ch));
-		curl_close($ch);
-		return false;
-	}
+    if (!$buffer) {
+        printf("cURL error: %s\n", curl_error($ch));
+        curl_close($ch);
+        return false;
+    }
 
-	curl_close($ch);
+    curl_close($ch);
 
-	return true;
+    return true;
 }
 
 ?>

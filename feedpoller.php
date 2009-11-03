@@ -24,7 +24,7 @@ $config = parse_ini_file('tricklepost.ini');
 $feeds = parse_ini_file('feeds.ini', true);
 
 $connection = mysql_connect($config['mysql_host'], $config['mysql_user'],
-    $config['mysql_passwd']) or die('Could not connect: ' . mysql_error());
+                            $config['mysql_passwd']) or die('Could not connect: ' . mysql_error());
 mysql_select_db('tricklepost') or die('Could not select database');
 
 foreach ($feeds as $feed) {
@@ -38,9 +38,8 @@ foreach ($feeds as $feed) {
     print "Reading feed: $feed[uri] ...\n";
 
     foreach ($feed_data->get_items() as $item) {
-
         insertItem($item, $feed['uri'], $feed['username'],
-            $feed['password'], $feed['endpoint']);
+                   $feed['password'], $feed['endpoint']);
     }
 }
 
@@ -52,18 +51,27 @@ function insertItem($item, $feedsource, $username, $password, $endpoint)
 {
     global $connection;
 
-    $hashstr = $FEEDSOURCE . $item->get_title() .
-        $item->get_permalink() . $item->get_date();
+    $title     = $item->get_title();
+    $permalink = $item->get_permalink();
+    $itemdate  = $item->get_date();
+
+    // Don't bother with incomplete items
+
+    if (empty($title) || empty($permalink) || empty($itemdate)) {
+        return;
+    }
+
+    $hashstr = $FEEDSOURCE . $title . $permalink . $itemdate;
 
     $hash = sha1($hashstr);
 
     $qry = 'INSERT IGNORE INTO item (created, feed, link, title, ';
     $qry .= 'description, hash, username, password, endpoint) ';
-    $qry .= 'VALUES (\'' . date('Y-m-d H:i:s', strtotime($item->get_date())) . '\', ';
+    $qry .= 'VALUES (\'' . date('Y-m-d H:i:s', strtotime($itemdate)) . '\', ';
     $qry .= "'$feedsource', ";
-    $qry .= '\'' . $item->get_permalink() . '\', ';
-    $qry .= '\'' . urlencode($item->get_title()) . '\', ';
-    $qry .= '\'' . urlencode($item->get_description()) . '\', ';
+    $qry .= '\'' . $permalink . '\', ';
+    $qry .= '\'' . urlencode($title) . '\', ';
+    $qry .= '\'' . urlencode($itemdate) . '\', ';
     $qry .= "'$hash', ";
     $qry .= "'$username', ";
     $qry .= "'$password', ";
@@ -72,7 +80,7 @@ function insertItem($item, $feedsource, $username, $password, $endpoint)
 
     mysql_query($qry) or die(mysql_error());
 
-    print 'Item: ' . $item->get_title() . "\n";
+    print 'Item: ' . $title . "\n";
 }
 
 ?>
