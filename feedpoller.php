@@ -38,8 +38,15 @@ foreach ($feeds as $feed) {
     print "Reading feed: $feed[uri] ...\n";
 
     foreach ($feed_data->get_items() as $item) {
-        insertItem($item, $feed['uri'], $feed['username'],
-                   $feed['password'], $feed['endpoint']);
+
+        // make sure the item's URL is good
+
+        $plink = $item->get_permalink();
+
+        if (validUrl($plink)) {
+            insertItem($item, $feed['uri'], $feed['username'],
+                       $feed['password'], $feed['endpoint']);
+        }
     }
 }
 
@@ -81,6 +88,17 @@ function insertItem($item, $feedsource, $username, $password, $endpoint)
     mysql_query($qry) or die(mysql_error());
 
     print 'Item: ' . $title . "\n";
+}
+
+function validUrl($url)
+{
+    $urlregex = "^(https?|ftp)\:\/\/([a-z0-9+!*(),;?&=\$_.-]+(\:[a-z0-9+!*(),;?&=\$_.-]+)?@)?[a-z0-9+\$_-]+(\.[a-z0-9+\$_-]+)*(\:[0-9]{2,5})?(\/([a-z0-9+\$_-]\.?)+)*\/?(\?[a-z+&\$_.-][a-z0-9;:@/&%=+\$_.-]*)?(#[a-z_.-][a-z0-9+\$_.-]*)?\$";
+
+    if (eregi($urlregex, $url)) {
+        return true;
+    }
+
+    return false;
 }
 
 ?>
