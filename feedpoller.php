@@ -90,15 +90,9 @@ function insertItem($item, $feedsource, $username, $password, $endpoint)
     print 'Item: ' . $title . "\n";
 }
 
-function validUrl($url)
+function validUrl($str)
 {
-    $urlregex = "^(https?|ftp)\:\/\/([a-z0-9+!*(),;?&=\$_.-]+(\:[a-z0-9+!*(),;?&=\$_.-]+)?@)?[a-z0-9+\$_-]+(\.[a-z0-9+\$_-]+)*(\:[0-9]{2,5})?(\/([a-z0-9+\$_-]\.?)+)*\/?(\?[a-z+&\$_.-][a-z0-9;:@/&%=+\$_.-]*)?(#[a-z_.-][a-z0-9+\$_.-]*)?\$";
-
-    if (eregi($urlregex, $url)) {
-        return true;
-    }
-
-    return false;
+    return ( ! preg_match('/^(http|https|ftp):\/\/([A-Z0-9][A-Z0-9_-]*(?:\.[A-Z0-9][A-Z0-9_-]*)+):?(\d+)?\/?/i', $str)) ? FALSE : TRUE;
 }
 
 ?>
