@@ -68,7 +68,7 @@ function insertItem($item, $feedsource, $username, $password, $endpoint)
         return;
     }
 
-    $hashstr = $FEEDSOURCE . $title . $permalink . $itemdate;
+    $hashstr = $feedsource . $title . $permalink . $itemdate;
 
     $hash = sha1($hashstr);
 
